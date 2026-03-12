@@ -55,7 +55,6 @@ workflow GENEPHYLO {
 
 			BLAST_UPDATEBLASTDB( ch_blastdb_in )
 			ch_blastdb = BLAST_UPDATEBLASTDB.out.db
-			ch_versions = ch_versions.mix(BLAST_UPDATEBLASTDB.out.versions)
 
 		}
 		// 2. build custom databases from sequences (build)
@@ -68,7 +67,6 @@ workflow GENEPHYLO {
 
 			BLAST_MAKEBLASTDB( ch_blastdb_in )
 			ch_blastdb = BLAST_MAKEBLASTDB.out.db
-			ch_versions = ch_versions.mix(BLAST_MAKEBLASTDB.out.versions)
 
 		}
 		// 3. use existing database (current)
@@ -91,7 +89,6 @@ workflow GENEPHYLO {
 
 			BLAST_BLASTN( ch_blast_in, ch_blastdb_in )
 			ch_blast_out = BLAST_BLASTN.out.txt
-			ch_versions = ch_versions.mix(BLAST_BLASTN.out.versions)
 
 		}
 		// 2. aa sequence: tblastn
@@ -99,14 +96,12 @@ workflow GENEPHYLO {
 
 			BLAST_TBLASTN( ch_blast_in, ch_blastdb_in )
 			ch_blast_out = BLAST_TBLASTN.out.txt
-			ch_versions = ch_versions.mix(BLAST_TBLASTN.out.versions)
 
 		}
 
 		// get the first column of the blast results file
 		BLAST_EXTRACT( ch_blast_out )
 		ch_accessions_out = BLAST_EXTRACT.out.accessions
-		ch_versions = ch_versions.mix(BLAST_EXTRACT.out.versions)
 
 		ch_extract_in = ch_accessions_out.map { meta, batch_file ->
 			tuple(meta, null, batch_file)
@@ -114,20 +109,16 @@ workflow GENEPHYLO {
 		
 		BLAST_BLASTDBCMD(ch_extract_in, ch_blastdb_in)
 		ch_extract_out = BLAST_BLASTDBCMD.out.fasta
-		ch_versions = ch_versions.mix(BLAST_BLASTDBCMD.out.versions)
 
 		SEQKIT_RMDUP(ch_extract_out)
 		ch_rmdup = SEQKIT_RMDUP.out.fastx
-		ch_versions = ch_versions.mix(SEQKIT_RMDUP.out.versions)
 		
 		ETE_TAXDB()
-		ch_versions = ch_versions.mix(ETE_TAXDB.out.versions)
 		taxdb_ready = ETE_TAXDB.out.ready
 
 		ETE_FILTER(ch_rmdup, ch_blast_out, taxdb_ready)
 		
 		ch_aln_in = ETE_FILTER.out.fasta
-		ch_versions = ch_versions.mix(ETE_FILTER.out.versions)
 
 		//
 		// SUBWORKFLOW: phylo
@@ -139,13 +130,11 @@ workflow GENEPHYLO {
 			)
 
 		ch_mafft_out = MAFFT_ALIGN.out.fas
-		ch_versions = ch_versions.mix(MAFFT_ALIGN.out.versions)
 
 		// build phylogenetic tree
 		FASTTREE ( ch_mafft_out )
 
 		ch_fasttree_out = FASTTREE.out.phylogeny
-		ch_versions = ch_versions.mix(FASTTREE.out.versions)
 
 		ch_iqtree_in = ch_mafft_out
 			.join(ch_fasttree_out)

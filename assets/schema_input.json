@@ -17,8 +17,8 @@
                 "type": "string",
                 "format": "file-path",
                 "exists": true,
-                "pattern": "^\\S+\\.fas(ta)?$",
-                "errorMessage": "Fasta file containing at least 1 sequence must be provided, cannot contain spaces and must have extension '.fas' or '.fasta'"
+                "pattern": "^\\S+\\.fa(sta?|s)?$",
+                "errorMessage": "Fasta file containing at least 1 sequence must be provided, cannot contain spaces and must have extension '.fa', '.fas' or '.fasta'"
             },
             "treefile": {
                 "type": "string",
