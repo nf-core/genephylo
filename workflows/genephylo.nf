@@ -113,10 +113,9 @@ workflow GENEPHYLO {
 		SEQKIT_RMDUP(ch_extract_out)
 		ch_rmdup = SEQKIT_RMDUP.out.fastx
 		
-		ETE_TAXDB()
-		taxdb_ready = ETE_TAXDB.out.ready
-
-		ETE_FILTER(ch_rmdup, ch_blast_out, taxdb_ready)
+		ch_taxdump = params.taxdump ? channel.value(file(params.taxdump, checkIfExists: true)) : []
+		ETE_TAXDB(ch_taxdump)
+		ETE_FILTER(ch_rmdup, ch_blast_out, ETE_TAXDB.out.etedotdir)
 		
 		ch_aln_in = ETE_FILTER.out.fasta
 

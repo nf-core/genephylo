@@ -10,28 +10,18 @@ process ETE_FILTER {
     input:
     tuple val(meta), path(fasta)
     tuple val(meta2), path(taxidmap)
-    val(taxdb_ready)
+    path(etedotdir)
 
     output:
     tuple val(meta), path("*_filtered.fasta"), emit: fasta
     tuple val(meta2), path("*_speciescodes.txt"), emit: txt
     path "versions.yml", emit: versions
 
-    when:
-    taxdb_ready == true
-
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
     # Set up writable environment for ete3
     export HOME=\$PWD
-    export XDG_DATA_HOME=\$PWD/.local/share
-    export XDG_CONFIG_HOME=\$PWD/.config
-    export XDG_CACHE_HOME=\$PWD/.cache
-    
-    # Create necessary directories
-    mkdir -p .local/share .config .cache .etetoolkit
-
     rename_seqs.py --taxidmap "$taxidmap" --input "$fasta" --prefix "${prefix}"
 
     cat <<-END_VERSIONS > versions.yml
