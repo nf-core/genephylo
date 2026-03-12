@@ -122,8 +122,13 @@ workflow GENEPHYLO {
 
 	TD2_LONGORFS(ch_orf_in)
 
-	ch_aln_in = TD2_LONGORFS.out.orfs
-
+	ch_aln_in = TD2_LONGORFS.out.orfs.map { meta, files ->
+        def fileList = files instanceof List ? files : [files]
+        def cdsFile = fileList.find { f -> f.name.endsWith('.cds') }
+        def fasFile = file("${cdsFile.parent}/${cdsFile.baseName}.fas")
+        cdsFile.copyTo(fasFile)
+        [meta, fasFile]
+    }
 	//
 	// SUBWORKFLOW: phylo
 	//
