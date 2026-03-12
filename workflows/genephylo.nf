@@ -87,7 +87,7 @@ workflow GENEPHYLO {
 		// 1. nt sequence: blastn
 		if ( params.blast_type == 'nt' ) {
 
-			BLAST_BLASTN( ch_blast_in, ch_blastdb_in, [], [], [] )
+			BLAST_BLASTN( ch_blast_in, ch_blastdb_in, [], params.blast_taxids, [] )
 			ch_blast_out = BLAST_BLASTN.out.txt
 
 		}
