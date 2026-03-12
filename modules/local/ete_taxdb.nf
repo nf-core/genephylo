@@ -6,8 +6,11 @@ process ETE_TAXDB {
         'https://depot.galaxyproject.org/singularity/ete3:3.1.2' :
         'quay.io/biocontainers/ete3:3.1.2' }"
 
+    input:
+    path(taxdump)
+
     output:
-    val true            , emit: ready
+    path(".etetoolkit") , emit: etedotdir
     path "versions.yml" , emit: versions
 
     when:
@@ -17,14 +20,7 @@ process ETE_TAXDB {
     """
     # Set up writable environment for ete3
     export HOME=\$PWD
-    export XDG_DATA_HOME=\$PWD/.local/share
-    export XDG_CONFIG_HOME=\$PWD/.config
-    export XDG_CACHE_HOME=\$PWD/.cache
-    
-    # Create necessary directories
-    mkdir -p .local/share .config .cache .etetoolkit
-
-    python -c "from ete3 import NCBITaxa"
+    python -c "from ete3 import NCBITaxa ; ncbi = NCBITaxa()"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
