@@ -18,6 +18,7 @@ include { ETE_TAXDB } from '../modules/local/ete_taxdb'
 include { ETE_FILTER } from '../modules/local/ete_filter'
 
 // ALIGN AND TREE
+include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
 include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
@@ -34,126 +35,130 @@ include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_gene
 
 workflow GENEPHYLO {
 
-		take:
-		ch_samplesheet // channel: samplesheet read in from --input
+	take:
+	ch_samplesheet // channel: samplesheet read in from --input
 
-		main:
+	main:
 
-		ch_versions = channel.empty()
+	ch_versions = channel.empty()
 
-		//
-		// SUBWORKFLOW: build BLAST database for subsequent analyses (3 options)
-		//
+	//
+	// SUBWORKFLOW: build BLAST database for subsequent analyses (3 options)
+	//
 
-		ch_blastdb_in = channel.empty()
-		ch_blastdb = channel.empty()
+	ch_blastdb_in = channel.empty()
+	ch_blastdb = channel.empty()
 
-		// 1. download from ncbi databases (update)
-		if (params.blastdb_option == 'update') {
+	// 1. download from ncbi databases (update)
+	if (params.blastdb_option == 'update') {
 
-			ch_blastdb_in = channel.of( tuple( [ id: "BLASTDB" ], params.blastdb_update ))
+		ch_blastdb_in = channel.of( tuple( [ id: "BLASTDB" ], params.blastdb_update ))
 
-			BLAST_UPDATEBLASTDB( ch_blastdb_in )
-			ch_blastdb = BLAST_UPDATEBLASTDB.out.db
+		BLAST_UPDATEBLASTDB( ch_blastdb_in )
+		ch_blastdb = BLAST_UPDATEBLASTDB.out.db
 
-		}
-		// 2. build custom databases from sequences (build)
-		else if (params.blastdb_option == 'build') {
+	}
+	// 2. build custom databases from sequences (build)
+	else if (params.blastdb_option == 'build') {
 
-			channel
-				.fromPath(params.blastdb_build, checkIfExists: true)
-				.map { dbpath -> tuple( [ id: "BLASTDB" ], file(dbpath) ) }
-				.set { ch_blastdb_in }
+		channel
+			.fromPath(params.blastdb_build, checkIfExists: true)
+			.map { dbpath -> tuple( [ id: "BLASTDB" ], file(dbpath) ) }
+			.set { ch_blastdb_in }
 
-			BLAST_MAKEBLASTDB( ch_blastdb_in )
-			ch_blastdb = BLAST_MAKEBLASTDB.out.db
+		BLAST_MAKEBLASTDB( ch_blastdb_in )
+		ch_blastdb = BLAST_MAKEBLASTDB.out.db
 
-		}
-		// 3. use existing database (current)
-		else if (params.blastdb_option == 'current') {
+	}
+	// 3. use existing database (current)
+	else if (params.blastdb_option == 'current') {
 
-			ch_blastdb = channel.of(tuple([ id: "BLASTDB" ], file(params.blastdb_dir) ))
+		ch_blastdb = channel.of(tuple([ id: "BLASTDB" ], file(params.blastdb_dir) ))
 
-		}
+	}
 
-		//
-		// SUBWORKFLOW: run BLAST on target sequences (2 options)
-		//
+	//
+	// SUBWORKFLOW: run BLAST on target sequences (2 options)
+	//
+	
+	ch_blast_in = ch_samplesheet.map { meta, fasta, tree -> tuple(meta, file(fasta)) }
+	ch_blastdb_in = ch_blastdb.first()
+	ch_blast_out = channel.empty()
+
+	// 1. nt sequence: blastn
+	if ( params.blast_type == 'nt' ) {
+
+		BLAST_BLASTN( ch_blast_in, ch_blastdb_in, [], params.blast_taxids, [] )
+		ch_blast_out = BLAST_BLASTN.out.txt
+
+	}
+	// 2. aa sequence: tblastn
+	else if ( params.blast_type == 'aa' ) {
+
+		BLAST_TBLASTN( ch_blast_in, ch_blastdb_in )
+		ch_blast_out = BLAST_TBLASTN.out.txt
+
+	}
+
+	// get the first column of the blast results file
+	BLAST_EXTRACT( ch_blast_out )
+	ch_accessions_out = BLAST_EXTRACT.out.accessions
+
+	ch_extract_in = ch_accessions_out.map { meta, batch_file ->
+		tuple(meta, null, batch_file)
+	}
+	
+	BLAST_BLASTDBCMD(ch_extract_in, ch_blastdb_in)
+	ch_extract_out = BLAST_BLASTDBCMD.out.fasta
+
+	SEQKIT_RMDUP(ch_extract_out)
+	ch_rmdup = SEQKIT_RMDUP.out.fastx
+	
+	ETE_TAXDB()
+	taxdb_ready = ETE_TAXDB.out.ready
+
+	ETE_FILTER(ch_rmdup, ch_blast_out, taxdb_ready)
+	
+	ch_orf_in = ETE_FILTER.out.fasta
+
+	TD2_LONGORFS(ch_orf_in)
+
+	ch_aln_in = TD2_LONGORFS.out.orfs
+
+	//
+	// SUBWORKFLOW: phylo
+	//
+
+	// build initial alignment
+	MAFFT_ALIGN (
+		ch_aln_in, [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], false
+		)
+
+	ch_mafft_out = MAFFT_ALIGN.out.fas
+
+	// build phylogenetic tree - IGNORE FOR NOW
+	// FASTTREE ( ch_mafft_out )
+
+	// ch_fasttree_out = FASTTREE.out.phylogeny
+
+	//ch_iqtree_in = ch_mafft_out
+	//	.join(ch_fasttree_out)
+	//	.map { meta, alignment, tree -> tuple(meta, alignment, tree) }
+
+	// Don't keep before reconciliation (too many gaps in aln before correct attribution of orthologous groups)
+	// IQTREE (
+	// 	ch_iqtree_in, [], [], [], [], [], [], [], [], [], [], [], []
+	// 	)
+	
+	// ch_iqtree_out = IQTREE.out.phylogeny
+	// ch_versions = ch_versions.mix(IQTREE.out.versions)
+
+	// if ( params.tree_tool == "iqtree" ) {
 		
-		ch_blast_in = ch_samplesheet.map { meta, fasta, tree -> tuple(meta, file(fasta)) }
-		ch_blastdb_in = ch_blastdb.first()
-		ch_blast_out = channel.empty()
-
-		// 1. nt sequence: blastn
-		if ( params.blast_type == 'nt' ) {
-
-			BLAST_BLASTN( ch_blast_in, ch_blastdb_in, [], params.blast_taxids, [] )
-			ch_blast_out = BLAST_BLASTN.out.txt
-
-		}
-		// 2. aa sequence: tblastn
-		else if ( params.blast_type == 'aa' ) {
-
-			BLAST_TBLASTN( ch_blast_in, ch_blastdb_in )
-			ch_blast_out = BLAST_TBLASTN.out.txt
-
-		}
-
-		// get the first column of the blast results file
-		BLAST_EXTRACT( ch_blast_out )
-		ch_accessions_out = BLAST_EXTRACT.out.accessions
-
-		ch_extract_in = ch_accessions_out.map { meta, batch_file ->
-			tuple(meta, null, batch_file)
-		}
-		
-		BLAST_BLASTDBCMD(ch_extract_in, ch_blastdb_in)
-		ch_extract_out = BLAST_BLASTDBCMD.out.fasta
-
-		SEQKIT_RMDUP(ch_extract_out)
-		ch_rmdup = SEQKIT_RMDUP.out.fastx
-		
-		ETE_TAXDB()
-		taxdb_ready = ETE_TAXDB.out.ready
-
-		ETE_FILTER(ch_rmdup, ch_blast_out, taxdb_ready)
-		
-		ch_aln_in = ETE_FILTER.out.fasta
-
-		//
-		// SUBWORKFLOW: phylo
-		//
-
-		// build initial alignment
-		MAFFT_ALIGN (
-			ch_aln_in, [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], false
-			)
-
-		ch_mafft_out = MAFFT_ALIGN.out.fas
-
-		// build phylogenetic tree - IGNORE FOR NOW
-		// FASTTREE ( ch_mafft_out )
-
-		// ch_fasttree_out = FASTTREE.out.phylogeny
-
-		//ch_iqtree_in = ch_mafft_out
-		//	.join(ch_fasttree_out)
-		//	.map { meta, alignment, tree -> tuple(meta, alignment, tree) }
-
-		// Don't keep before reconciliation (too many gaps in aln before correct attribution of orthologous groups)
-		// IQTREE (
-		// 	ch_iqtree_in, [], [], [], [], [], [], [], [], [], [], [], []
-		// 	)
-		
-		// ch_iqtree_out = IQTREE.out.phylogeny
-		// ch_versions = ch_versions.mix(IQTREE.out.versions)
-
-		// if ( params.tree_tool == "iqtree" ) {
-			
-		// }
-		// else if ( params.tree_tool == "fasttree" ) {
-		// 	ch_fasttree_in = ch_mafft_out.map { meta, alignment -> alignment }
-		// }
+	// }
+	// else if ( params.tree_tool == "fasttree" ) {
+	// 	ch_fasttree_in = ch_mafft_out.map { meta, alignment -> alignment }
+	// }
 
     def topic_versions = Channel.topic("versions")
         .distinct()
@@ -181,8 +186,8 @@ workflow GENEPHYLO {
             newLine: true
         ).set { ch_collated_versions }
 
-		emit:
-		versions       = ch_versions.toList()                 // channel: [ path(versions.yml) ]
+	emit:
+	versions       = ch_versions.toList()                 // channel: [ path(versions.yml) ]
 
 }
 
