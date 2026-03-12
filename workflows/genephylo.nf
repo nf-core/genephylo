@@ -131,14 +131,14 @@ workflow GENEPHYLO {
 
 		ch_mafft_out = MAFFT_ALIGN.out.fas
 
-		// build phylogenetic tree
-		FASTTREE ( ch_mafft_out )
+		// build phylogenetic tree - IGNORE FOR NOW
+		// FASTTREE ( ch_mafft_out )
 
-		ch_fasttree_out = FASTTREE.out.phylogeny
+		// ch_fasttree_out = FASTTREE.out.phylogeny
 
-		ch_iqtree_in = ch_mafft_out
-			.join(ch_fasttree_out)
-			.map { meta, alignment, tree -> tuple(meta, alignment, tree) }
+		//ch_iqtree_in = ch_mafft_out
+		//	.join(ch_fasttree_out)
+		//	.map { meta, alignment, tree -> tuple(meta, alignment, tree) }
 
 		// Don't keep before reconciliation (too many gaps in aln before correct attribution of orthologous groups)
 		// IQTREE (

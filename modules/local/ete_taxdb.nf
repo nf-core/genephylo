@@ -24,7 +24,7 @@ process ETE_TAXDB {
     # Create necessary directories
     mkdir -p .local/share .config .cache .etetoolkit
 
-    python -c "from ete3 import NCBITaxa; NCBITaxa().update_taxonomy_database()"
+    python -c "from ete3 import NCBITaxa"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
