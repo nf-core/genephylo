@@ -20,7 +20,7 @@ process BLAST_EXTRACT {
     script:
     def prefix = task.ext.prefix ?: "${meta.id}"
     """
-    gawk '{print \$1}' "$blastres" > "${prefix}_accessions.txt"
+    gawk -F'|' '{for (i=2; i<NF; i++) print \$i}' "$blastres" > "${prefix}_accessions.txt"
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":
