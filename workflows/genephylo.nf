@@ -19,6 +19,7 @@ include { ETE_FILTER } from '../modules/local/ete_filter'
 
 // ALIGN AND TREE
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
+include { TD2_PREDICT } from '../modules/nf-core/td2/predict/main'
 include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
@@ -123,12 +124,19 @@ workflow GENEPHYLO {
 
 	TD2_LONGORFS(ch_orf_in)
 
-	ch_aln_in = TD2_LONGORFS.out.orfs.map { meta, files ->
-        def fileList = files instanceof List ? files : [files]
-        def cdsFile = fileList.find { f -> f.name.endsWith('.cds') }
-        def fasFile = file("${cdsFile.parent}/${cdsFile.baseName}.fas")
-        cdsFile.copyTo(fasFile)
-        [meta, fasFile]
+	ch_orf_folder = TD2_LONGORFS.out.orfs
+    .map { meta, files -> 
+        tuple(meta, files[0].parent)  // Get parent directory of first file
+    }
+
+	ch_predict_in = ch_orf_in.join(ch_orf_folder, by:0)
+
+	TD2_PREDICT(ch_predict_in)
+
+	ch_aln_in = TD2_PREDICT.out.predictions
+    .map { meta, files -> 
+        def cds_file = files.find { it.name.endsWith('.TD2.cds') }
+        tuple(meta, cds_file)
     }
 	//
 	// SUBWORKFLOW: phylo
