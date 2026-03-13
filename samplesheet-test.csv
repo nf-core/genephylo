@@ -1,2 +1,3 @@
 id,fastafile,treefile
-HBB,/flash/YamamotoU/Lea/hackathon/test-data/primata_HBB.fasta,
+HBB,https://raw.githubusercontent.com/nf-core/genephylo/refs/heads/tmpBranch_forTestData/primata_HBB.fasta,
+HBB2,https://raw.githubusercontent.com/nf-core/genephylo/refs/heads/tmpBranch_forTestData/primata_HBB.fasta,
