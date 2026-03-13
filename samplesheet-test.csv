@@ -1,3 +1,3 @@
 id,fastafile,treefile
-CDK12,human_cdk12.fasta,
-CDK12000,human_cdk12.fasta,
+CDK12,https://raw.githubusercontent.com/nf-core/genephylo/refs/heads/tmpBranch_forTestData/human_cdk12.fasta,
+CDK12000,https://raw.githubusercontent.com/nf-core/genephylo/refs/heads/tmpBranch_forTestData/human_cdk12.fasta,
