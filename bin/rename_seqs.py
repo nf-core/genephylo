@@ -1,14 +1,23 @@
 #!/usr/bin/env python3
 import argparse
-from ete3 import NCBITaxa
+import re
 import os
+from ete3 import NCBITaxa
 
 # ----- Helpers -----
 def load_taxid_map(path):
     print(f"Loading taxid map from: {path}")
     with open(path, "r", encoding="utf-8") as fh:
-        mapping = {parts[0]: parts[1] for parts in (line.strip().split("\t") for line in fh)}
+        mapping = {}
+        with open(path, "r", encoding="utf-8") as fh:
+            for line in fh:
+                line = line.strip()
+                parts = line.split("\t")
+                left, right = parts[0].strip(), parts[1].strip()
+                key = left.split("|")[1] if "|" in left else left
+                mapping[key] = right
     print(f"Loaded {len(mapping)} entries from taxid map.")
+    print(mapping)
     return mapping
 
 def parse_fasta(path):
@@ -34,8 +43,22 @@ def parse_fasta(path):
     print(f"Parsed {count} sequences from FASTA.")
 
 def extract_gene(desc):
-    parts = desc.split("[gene=", 1)
-    return parts[1].split("]", 1)[0] if len(parts) > 1 else "unknowngene"
+    # compile patterns only once — they become function attributes
+    if not hasattr(extract_gene, "_gene_tag"):
+        extract_gene._gene_tag = re.compile(r'\[gene=([^\[\]]+)\]')
+        extract_gene._gene_paren = re.compile(r'\(([A-Za-z0-9._-]+)\)')
+
+    # 1) [gene=...]
+    m = extract_gene._gene_tag.search(desc)
+    if m:
+        return m.group(1).strip()
+
+    # 2) (GENE)
+    m2 = extract_gene._gene_paren.search(desc)
+    if m2:
+        return m2.group(1).strip()
+
+    return "unknowngene"
 
 def make_code(scname):
     if not scname:
