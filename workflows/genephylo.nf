@@ -66,7 +66,8 @@ workflow GENEPHYLO {
 			.map { dbpath -> tuple( [ id: "BLASTDB" ], file(dbpath) ) }
 			.set { ch_blastdb_in }
 
-		BLAST_MAKEBLASTDB( ch_blastdb_in )
+	        ch_taxmap = channel.value(file(params.blastdb_buildmap, checkIfExists: true))
+		BLAST_MAKEBLASTDB( ch_blastdb_in, ch_taxmap )
 		ch_blastdb = BLAST_MAKEBLASTDB.out.db
 
 	}
