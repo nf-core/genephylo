@@ -195,12 +195,6 @@
         "hook_url": {
             "type": "string"
         },
-        "help_full": {
-            "type": "boolean"
-        },
-        "show_hidden": {
-            "type": "boolean"
-        },
         "pipelines_testdata_base_path": {
             "type": "string",
             "default": "https://raw.githubusercontent.com/nf-core/test-datasets/"
