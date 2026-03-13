@@ -54,6 +54,11 @@
                         "branch": "master",
                         "git_sha": "d8a5691c90385f3b98c3c0eaa2de16e392be7f51",
                         "installed_by": ["modules"]
+                    },
+                    "td2/predict": {
+                        "branch": "master",
+                        "git_sha": "d8a5691c90385f3b98c3c0eaa2de16e392be7f51",
+                        "installed_by": ["modules"]
                     }
                 }
             },
