@@ -80,7 +80,7 @@ workflow GENEPHYLO {
 	//
 	// SUBWORKFLOW: run BLAST on target sequences (2 options)
 	//
-	
+
 	ch_blast_in = ch_samplesheet.map { meta, fasta, tree -> tuple(meta, file(fasta)) }
 	ch_blastdb_in = ch_blastdb.first()
 	ch_blast_out = channel.empty()
@@ -107,17 +107,17 @@ workflow GENEPHYLO {
 	ch_extract_in = ch_accessions_out.map { meta, batch_file ->
 		tuple(meta, null, batch_file)
 	}
-	
+
 	BLAST_BLASTDBCMD(ch_extract_in, ch_blastdb_in)
 	ch_extract_out = BLAST_BLASTDBCMD.out.fasta
 
 	SEQKIT_RMDUP(ch_extract_out)
 	ch_rmdup = SEQKIT_RMDUP.out.fastx
-	
+
 	ch_taxdump = params.taxdump ? channel.value(file(params.taxdump, checkIfExists: true)) : []
 	ETE_TAXDB(ch_taxdump)
 	ETE_FILTER(ch_rmdup, ch_blast_out, ETE_TAXDB.out.etedotdir)
-	
+
 	ch_orf_in = ETE_FILTER.out.fasta
 
 	TD2_LONGORFS(ch_orf_in)
@@ -153,12 +153,12 @@ workflow GENEPHYLO {
 	// IQTREE (
 	// 	ch_iqtree_in, [], [], [], [], [], [], [], [], [], [], [], []
 	// 	)
-	
+
 	// ch_iqtree_out = IQTREE.out.phylogeny
 	// ch_versions = ch_versions.mix(IQTREE.out.versions)
 
 	// if ( params.tree_tool == "iqtree" ) {
-		
+
 	// }
 	// else if ( params.tree_tool == "fasttree" ) {
 	// 	ch_fasttree_in = ch_mafft_out.map { meta, alignment -> alignment }
