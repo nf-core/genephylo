@@ -1,3 +1,2 @@
 id,fastafile,treefile
-CDK12,https://raw.githubusercontent.com/nf-core/genephylo/refs/heads/tmpBranch_forTestData/human_cdk12.fasta,
-CDK12000,https://raw.githubusercontent.com/nf-core/genephylo/refs/heads/tmpBranch_forTestData/human_cdk12.fasta,
+HBB,/flash/YamamotoU/Lea/hackathon/test-data/primata_HBB.fasta,
