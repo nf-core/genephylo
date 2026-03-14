@@ -21,13 +21,15 @@
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
-                    "fa_icon": "fas fa-file-csv"
+                    "fa_icon": "fas fa-file-csv",
+                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/samplesheet-test.csv"
                 },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open"
+                    "fa_icon": "fas fa-folder-open",
+                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/"
                 }
             }
         },
@@ -39,7 +41,7 @@
             "properties": {
                 "blastdb_option": {
                     "type": "string",
-                    "default": "current",
+                    "default": "build",
                     "enum": ["current", "update", "build"],
                     "description": "Configure database option to either download a pre-formatted one (update), build a custom one (build) or reference a local database (current)."
                 },
@@ -56,12 +58,18 @@
                 "blastdb_build": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the fasta file of the sequences for the custom database (required for build option)."
+                    "description": "Path to the fasta file of the sequences for the custom database (required for build option).",
+                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/testdb.fa"
                 },
                 "blastdb_buildmap": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to a file associating each sequence id of the custom database to its taxid (required for build option)."
+                    "description": "Path to a file associating each sequence id of the custom database to its taxid (required for build option).",
+                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/taxid.map"
+                },
+                "taxdump": {
+                    "type": "string",
+                    "description": "taxdump.tar.gz file containing nodes.dmp, names.dmp which assign taxonomy to NCBI taxIDs"
                 }
             },
             "required": ["blastdb_option"],
@@ -75,27 +83,33 @@
             "properties": {
                 "blast_type": {
                     "type": "string",
-                    "default": "aa",
-                    "enum": ["aa", "nt"]
+                    "default": "nt",
+                    "enum": ["aa", "nt"],
+                    "description": "choose either nucleotide or protein database"
                 },
                 "blast_coverage": {
                     "type": "integer",
-                    "default": 50
+                    "default": 50,
+                    "description": "% of query vs hit identity"
                 },
                 "blast_identity": {
                     "type": "integer",
-                    "default": 50
+                    "default": 50,
+                    "description": "proportion  of exact matches"
                 },
                 "blast_evalue": {
                     "type": "number",
-                    "default": 0.01
+                    "default": 0.1,
+                    "description": "number of hits with similiar or better score to by found by chance when searching the database of similiar size"
                 },
                 "blast_hits": {
                     "type": "integer",
-                    "default": 100
+                    "default": 100,
+                    "description": "positive matches to query sequence"
                 },
                 "blast_taxids": {
-                    "type": "string"
+                    "type": "string",
+                    "description": "numbers assigned by NCBI to identify taxonomical units"
                 }
             },
             "required": ["blast_type", "blast_coverage", "blast_identity", "blast_evalue", "blast_hits"],
@@ -156,6 +170,80 @@
                     "description": "Display hidden parameters in the help message (only works when --help or --help_full are provided)."
                 }
             }
+        },
+        "new_group_1": {
+            "title": "Configs and emails",
+            "type": "object",
+            "description": "",
+            "default": "",
+            "properties": {
+                "email": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "email_on_fail": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "plaintext_email": {
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "monochrome_logs": {
+                    "type": "boolean",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "hook_url": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "pipelines_testdata_base_path": {
+                    "type": "string",
+                    "default": "https://raw.githubusercontent.com/nf-core/test-datasets/",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "config_profile_description": {
+                    "type": "string",
+                    "hidden": true,
+                    "description": "NA"
+                },
+                "config_profile_name": {
+                    "type": "string",
+                    "description": "NA"
+                },
+                "custom_config_version": {
+                    "type": "string",
+                    "default": "master",
+                    "description": "NA"
+                },
+                "custom_config_base": {
+                    "type": "string",
+                    "default": "https://raw.githubusercontent.com/nf-core/configs/master",
+                    "description": "NA"
+                },
+                "config_profile_url": {
+                    "type": "string",
+                    "description": "NA",
+                    "hidden": true
+                },
+                "publish_dir_mode": {
+                    "type": "string",
+                    "default": "copy",
+                    "description": "NA",
+                    "hidden": true
+                },
+                "config_profile_contact": {
+                    "type": "string",
+                    "description": "NA",
+                    "hidden": true
+                }
+            }
         }
     },
     "allOf": [
@@ -173,51 +261,9 @@
         },
         {
             "$ref": "#/$defs/generic_options"
+        },
+        {
+            "$ref": "#/$defs/new_group_1"
         }
-    ],
-    "properties": {
-        "publish_dir_mode": {
-            "type": "string",
-            "default": "copy"
-        },
-        "email": {
-            "type": "string"
-        },
-        "email_on_fail": {
-            "type": "string"
-        },
-        "plaintext_email": {
-            "type": "boolean"
-        },
-        "monochrome_logs": {
-            "type": "boolean"
-        },
-        "hook_url": {
-            "type": "string"
-        },
-        "pipelines_testdata_base_path": {
-            "type": "string",
-            "default": "https://raw.githubusercontent.com/nf-core/test-datasets/"
-        },
-        "config_profile_name": {
-            "type": "string"
-        },
-        "config_profile_description": {
-            "type": "string"
-        },
-        "custom_config_version": {
-            "type": "string",
-            "default": "master"
-        },
-        "custom_config_base": {
-            "type": "string",
-            "default": "https://raw.githubusercontent.com/nf-core/configs/master"
-        },
-        "config_profile_contact": {
-            "type": "string"
-        },
-        "config_profile_url": {
-            "type": "string"
-        }
-    }
+    ]
 }
