@@ -21,15 +21,13 @@
                     "pattern": "^\\S+\\.csv$",
                     "description": "Path to comma-separated file containing information about the samples in the experiment.",
                     "help_text": "You will need to create a design file with information about the samples in your experiment before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row.",
-                    "fa_icon": "fas fa-file-csv",
-                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/samplesheet-test.csv"
+                    "fa_icon": "fas fa-file-csv"
                 },
                 "outdir": {
                     "type": "string",
                     "format": "directory-path",
                     "description": "The output directory where the results will be saved. You have to use absolute paths to storage on Cloud infrastructure.",
-                    "fa_icon": "fas fa-folder-open",
-                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/"
+                    "fa_icon": "fas fa-folder-open"
                 }
             }
         },
@@ -41,7 +39,7 @@
             "properties": {
                 "blastdb_option": {
                     "type": "string",
-                    "default": "build",
+                    "default": "update",
                     "enum": ["current", "update", "build"],
                     "description": "Configure database option to either download a pre-formatted one (update), build a custom one (build) or reference a local database (current)."
                 },
@@ -58,14 +56,12 @@
                 "blastdb_build": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to the fasta file of the sequences for the custom database (required for build option).",
-                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/testdb.fa"
+                    "description": "Path to the fasta file of the sequences for the custom database (required for build option)."
                 },
                 "blastdb_buildmap": {
                     "type": "string",
                     "format": "file-path",
-                    "description": "Path to a file associating each sequence id of the custom database to its taxid (required for build option).",
-                    "default": "/flash/YamamotoU/Lea/hackathon/test-data/taxid.map"
+                    "description": "Path to a file associating each sequence id of the custom database to its taxid (required for build option)."
                 },
                 "taxdump": {
                     "type": "string",
