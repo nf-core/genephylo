@@ -1,0 +1,112 @@
+{
+    "-profile test": {
+        "content": [
+            {
+                "BLAST_BLASTDBCMD": {
+                    "blastdbcmd": "2.17.0+"
+                },
+                "BLAST_BLASTN": {
+                    "blastn": "2.17.0+"
+                },
+                "BLAST_MAKEBLASTDB": {
+                    "makeblastdb": "2.17.0+"
+                },
+                "MAFFT_ALIGN": {
+                    "mafft": "v7.520 (2023/Mar/22)",
+                    "pigz": 2.8
+                },
+                "TD2_LONGORFS": {
+                    "TD2.LongOrfs": "1.0.6"
+                },
+                "Workflow": {
+                    "nf-core/genephylo": "v1.0.0dev"
+                }
+            },
+            [
+                "blast",
+                "blast/BLASTDB",
+                "blast/BLASTDB/testdb.fa.ndb",
+                "blast/BLASTDB/testdb.fa.nhr",
+                "blast/BLASTDB/testdb.fa.nin",
+                "blast/BLASTDB/testdb.fa.njs",
+                "blast/BLASTDB/testdb.fa.nog",
+                "blast/BLASTDB/testdb.fa.nos",
+                "blast/BLASTDB/testdb.fa.not",
+                "blast/BLASTDB/testdb.fa.nsq",
+                "blast/BLASTDB/testdb.fa.ntf",
+                "blast/BLASTDB/testdb.fa.nto",
+                "blast/HBB.fasta",
+                "blast/HBB.txt",
+                "blast/HBB2.fasta",
+                "blast/HBB2.txt",
+                "blast/HBB2_accessions.txt",
+                "blast/HBB_accessions.txt",
+                "ete",
+                "ete/.etetoolkit",
+                "ete/.etetoolkit/taxa.sqlite",
+                "ete/.etetoolkit/taxa.sqlite.traverse.pkl",
+                "ete/HBB2_filtered.fasta",
+                "ete/HBB2_speciescodes.txt",
+                "ete/HBB_filtered.fasta",
+                "ete/HBB_speciescodes.txt",
+                "mafft",
+                "mafft/HBB.fas",
+                "mafft/HBB2.fas",
+                "pipeline_info",
+                "pipeline_info/nf_core_genephylo_software_mqc_versions.yml",
+                "seqkit",
+                "seqkit/HBB2_uniq.fasta",
+                "seqkit/HBB2_uniq.log",
+                "seqkit/HBB_uniq.fasta",
+                "seqkit/HBB_uniq.log",
+                "td2",
+                "td2/HBB",
+                "td2/HBB/longest_orfs.cds",
+                "td2/HBB/longest_orfs.gff3",
+                "td2/HBB/longest_orfs.pep",
+                "td2/HBB2",
+                "td2/HBB2/longest_orfs.cds",
+                "td2/HBB2/longest_orfs.gff3",
+                "td2/HBB2/longest_orfs.pep"
+            ],
+            [
+                "testdb.fa.ndb:md5,005a59c99e610c8d342cf9f3c495bc1b",
+                "testdb.fa.nhr:md5,7796af8ceb1bb4eda3fb2e732ba0e6f3",
+                "testdb.fa.nog:md5,e105fa37a2549d430b575eccfc342536",
+                "testdb.fa.nos:md5,cce72a260f70f076510cb5a893be831b",
+                "testdb.fa.not:md5,a8f90985612bbbd56ec706bcbbcc5208",
+                "testdb.fa.nsq:md5,972f0b66ccd2ad7f1539463ed8b08c29",
+                "testdb.fa.ntf:md5,7e71d0e2efc5924cdbec516b933ffb6d",
+                "testdb.fa.nto:md5,bc9465c94bc2b1fad619a541abf5c921",
+                "HBB.fasta:md5,0e99d11adfdac52236afdf4481ccd4c1",
+                "HBB.txt:md5,44b52c53fdf7f787f25b11e9af41cce9",
+                "HBB2.fasta:md5,0e99d11adfdac52236afdf4481ccd4c1",
+                "HBB2.txt:md5,44b52c53fdf7f787f25b11e9af41cce9",
+                "HBB2_accessions.txt:md5,0cbed2c464a9a0df70bd813a21e1cc27",
+                "HBB_accessions.txt:md5,0cbed2c464a9a0df70bd813a21e1cc27",
+                "taxa.sqlite.traverse.pkl:md5,b0ab1a8abc458c0fe33beccda10aa4fc",
+                "HBB2_filtered.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "HBB2_speciescodes.txt:md5,ba16a04f12aea085d3d267739980c1d2",
+                "HBB_filtered.fasta:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "HBB_speciescodes.txt:md5,ba16a04f12aea085d3d267739980c1d2",
+                "HBB.fas:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "HBB2.fas:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "HBB2_uniq.fasta:md5,d35b33f2b6db576cc86d76723930c473",
+                "HBB2_uniq.log:md5,a41135cfe024baaf42f135583fe73f0d",
+                "HBB_uniq.fasta:md5,d35b33f2b6db576cc86d76723930c473",
+                "HBB_uniq.log:md5,a41135cfe024baaf42f135583fe73f0d",
+                "longest_orfs.cds:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "longest_orfs.gff3:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "longest_orfs.pep:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "longest_orfs.cds:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "longest_orfs.gff3:md5,d41d8cd98f00b204e9800998ecf8427e",
+                "longest_orfs.pep:md5,d41d8cd98f00b204e9800998ecf8427e"
+            ]
+        ],
+        "meta": {
+            "nf-test": "0.9.3",
+            "nextflow": "25.10.4"
+        },
+        "timestamp": "2026-03-13T16:38:27.039241815"
+    }
+}

@@ -13,4 +13,8 @@ Initial release of nf-core/genephylo, created with the [nf-core](https://nf-co.r
 
 ### `Dependencies`
 
+- Updated pipeline template to [nf-core/tools 4.2.1](https://github.com/nf-core/tools/releases/tag/4.2.1) (minimum Nextflow `25.10.4`, nf-schema `2.7.3`)
+
 ### `Deprecated`
+
+- Removed `--hook_url` (Slack/Teams notifications), following the nf-core template
