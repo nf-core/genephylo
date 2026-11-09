@@ -126,7 +126,7 @@ workflow GENEPHYLO {
 	TD2_LONGORFS(ch_orf_in, [ [:], [], [] ], [ [:], [] ])
 
 	ch_orf_folder = TD2_LONGORFS.out.orfs
-    .map { meta, files -> 
+    .map { meta, files ->
         tuple(meta, files[0].parent)  // Get parent directory of first file
     }
 
@@ -135,7 +135,7 @@ workflow GENEPHYLO {
 	TD2_PREDICT(ch_predict_in)
 
 	ch_aln_in = TD2_PREDICT.out.cds
-	
+
 	//
 	// SUBWORKFLOW: phylo
 	//
