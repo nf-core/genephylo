@@ -123,7 +123,7 @@ workflow GENEPHYLO {
 
 	ch_orf_in = ETE_FILTER.out.fasta
 
-	TD2_LONGORFS(ch_orf_in)
+	TD2_LONGORFS(ch_orf_in, [ [:], [], [] ], [ [:], [] ])
 
 	ch_orf_folder = TD2_LONGORFS.out.orfs
     .map { meta, files -> 
@@ -134,11 +134,8 @@ workflow GENEPHYLO {
 
 	TD2_PREDICT(ch_predict_in)
 
-	ch_aln_in = TD2_PREDICT.out.predictions
-    .map { meta, files -> 
-        def cds_file = files.find { it.name.endsWith('.TD2.cds') }
-        tuple(meta, cds_file)
-    }
+	ch_aln_in = TD2_PREDICT.out.cds
+	
 	//
 	// SUBWORKFLOW: phylo
 	//
