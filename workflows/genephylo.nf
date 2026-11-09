@@ -11,7 +11,7 @@ include { BLAST_MAKEBLASTDB } from '../modules/nf-core/blast/makeblastdb/main'
 // retrieve sequences
 include { BLAST_BLASTN } from '../modules/nf-core/blast/blastn/main'
 include { BLAST_TBLASTN } from '../modules/nf-core/blast/tblastn/main'
-include { BLAST_EXTRACT } from '../modules/local/blast_extract'
+include { GAWK_BLASTEXTRACT } from '../modules/local/gawk/blastextract/main'
 include { BLAST_BLASTDBCMD } from '../modules/nf-core/blast/blastdbcmd/main'
 include { SEQKIT_RMDUP } from '../modules/nf-core/seqkit/rmdup/main'
 include { ETE_TAXDB } from '../modules/local/ete_taxdb'
@@ -21,6 +21,7 @@ include { ETE_FILTER } from '../modules/local/ete_filter'
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
 include { TD2_PREDICT } from '../modules/nf-core/td2/predict/main'
 include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
+include { GAWK_CLEANFASTAIDS } from '../modules/local/gawk/cleanfastaids/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
 
@@ -103,8 +104,8 @@ workflow GENEPHYLO {
 	}
 
 	// get the first column of the blast results file
-	BLAST_EXTRACT( ch_blast_out )
-	ch_accessions_out = BLAST_EXTRACT.out.accessions
+	GAWK_BLASTEXTRACT( ch_blast_out )
+	ch_accessions_out = GAWK_BLASTEXTRACT.out.accessions
 
 	ch_extract_in = ch_accessions_out.map { meta, batch_file ->
 		tuple(meta, null, batch_file)
@@ -148,6 +149,9 @@ workflow GENEPHYLO {
 		)
 
 	ch_mafft_out = MAFFT_ALIGN.out.fas
+
+	GAWK_CLEANFASTAIDS ( ch_mafft_out )
+	ch_cleanfasta_out = GAWK_CLEANFASTAIDS.out.fasta
 
 	// build phylogenetic tree - IGNORE FOR NOW
 	// FASTTREE ( ch_mafft_out )
