@@ -1,4 +1,4 @@
-process GAWK_CLEANFASTAIDS {
+process GAWK_CLEANORFS {
     tag "${meta.id}"
     label 'process_single'
 
@@ -21,8 +21,32 @@ process GAWK_CLEANFASTAIDS {
     def prefix = task.ext.prefix ?: "${meta.id}_clean"
     // Suffix added by TD2 to ORF ids (e.g. ".p1", ".p2"); can be overridden with ext.args
     def suffix = task.ext.args ?: '\\.p[0-9]+'
+    // For each input sequence, keep only the longest ORF reported by TD2.LongOrfs
+    // (ties: the first one encountered) and clean its id: drop the header description
+    // and the ORF suffix. Sequences are written in their order of first appearance.
     """
-    gawk '/^>/ { sub(/[[:space:]].*\$/, ""); sub(/${suffix}\$/, "") } 1' ${fasta} > ${prefix}.fasta
+    gawk '
+        function keep() {
+            if (id == "") return
+            if (!(id in best_len)) { order[++n] = id; best_len[id] = -1 }
+            if (length(seq) > best_len[id]) { best_len[id] = length(seq); best_seq[id] = seq }
+        }
+        /^>/ {
+            keep()
+            id = substr(\$1, 2)
+            sub(/${suffix}\$/, "", id)
+            seq = ""
+            next
+        }
+        { gsub(/[[:space:]]/, ""); seq = seq \$0 }
+        END {
+            keep()
+            for (i = 1; i <= n; i++) {
+                print ">" order[i]
+                print best_seq[order[i]]
+            }
+        }
+    ' ${fasta} > ${prefix}.fasta
     """
 
     stub:

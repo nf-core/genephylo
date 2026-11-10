@@ -1,6 +1,6 @@
 {
     "$schema": "https://json-schema.org/draft/2020-12/schema",
-    "$id": "https://raw.githubusercontent.com/nf-core/genephylo//nextflow_schema.json",
+    "$id": "https://raw.githubusercontent.com/nf-core/genephylo/main/nextflow_schema.json",
     "title": "nf-core/genephylo pipeline parameters",
     "description": "This pipeline retrieves orthologous gene sequences and construct codon-aware analyses and phylogenetic trees",
     "type": "object",
@@ -122,6 +122,12 @@
                     "default": "fasttree",
                     "description": "Choose which software to use to infer phylogenetic tree.",
                     "enum": ["iqtree", "fasttree"]
+                },
+                "species_tree": {
+                    "type": "string",
+                    "format": "file-path",
+                    "exists": true,
+                    "description": "Species tree (Newick) used by Treerecs to reconcile the gene trees."
                 }
             },
             "required": ["tree_tool"],
