@@ -17,7 +17,7 @@ process SEQKIT_GREP {
     val out_ext
 
     output:
-    tuple val(meta), path("*.{fa,fq,fa.gz,fq.gz}"), emit: filter
+    tuple val(meta), path("*.{fa,fasta,fq,fa.gz,fasta.gz,fq.gz}"), emit: filter
     tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), emit: versions_seqkit, topic: versions
 
     when:

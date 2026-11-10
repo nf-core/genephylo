@@ -23,6 +23,8 @@ include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
 include { GAWK_CLEANORFS } from '../modules/local/gawk/cleanorfs/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
 include { TREERECS } from '../modules/nf-core/treerecs/main'
+include { SELECT_ORTHOGROUP } from '../modules/local/select_orthogroup/main'
+include { SEQKIT_GREP } from '../modules/nf-core/seqkit/grep/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 
 include { paramsSummaryMap       } from 'plugin/nf-schema'
@@ -155,6 +157,24 @@ workflow GENEPHYLO {
 	TREERECS ( ch_treerecs_in )
 
 	ch_treerecs_out = TREERECS.out.rectree
+
+	//
+	// ORTHOGROUP: keep the sequences reconciled with the gene of interest (meta.id)
+	//
+
+	SELECT_ORTHOGROUP ( ch_treerecs_out )
+
+	// pair each gene's ORF sequences with its own id list (joined on meta, not on arrival order)
+	ch_grep_in = ch_aln_in
+		.join(SELECT_ORTHOGROUP.out.ids)
+		.multiMap { meta, fasta, ids ->
+			sequence: tuple(meta, fasta)
+			pattern:  ids
+		}
+
+	SEQKIT_GREP ( ch_grep_in.sequence, ch_grep_in.pattern, 'fasta' )
+
+	ch_orthogroup_out = SEQKIT_GREP.out.filter
 
 	//ch_iqtree_in = ch_mafft_out
 	//	.join(ch_fasttree_out)

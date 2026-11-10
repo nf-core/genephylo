@@ -1,0 +1,22 @@
+Changes in component 'nf-core/seqkit/grep'
+'modules/nf-core/seqkit/grep/meta.yml' is unchanged
+Changes in 'seqkit/grep/main.nf':
+--- modules/nf-core/seqkit/grep/main.nf
++++ modules/nf-core/seqkit/grep/main.nf
+@@ -17,7 +17,7 @@
+     val out_ext
+ 
+     output:
+-    tuple val(meta), path("*.{fa,fq,fa.gz,fq.gz}"), emit: filter
++    tuple val(meta), path("*.{fa,fasta,fq,fa.gz,fasta.gz,fq.gz}"), emit: filter
+     tuple val("${task.process}"), val('seqkit'), eval('seqkit version | sed "s/seqkit v//"'), emit: versions_seqkit, topic: versions
+ 
+     when:
+
+'modules/nf-core/seqkit/grep/environment.yml' is unchanged
+'modules/nf-core/seqkit/grep/.conda-lock/linux_amd64-bd-3bacfb68370dd835_1.txt' is unchanged
+'modules/nf-core/seqkit/grep/.conda-lock/linux_arm64-bd-2c3127bb2c908a0f_1.txt' is unchanged
+'modules/nf-core/seqkit/grep/tests/main.nf.test' is unchanged
+'modules/nf-core/seqkit/grep/tests/main.nf.test.snap' is unchanged
+'modules/nf-core/seqkit/grep/tests/nextflow.config' is unchanged
+************************************************************
