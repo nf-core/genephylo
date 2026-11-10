@@ -32,7 +32,7 @@
                     },
                     "fasttree": {
                         "branch": "master",
-                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "git_sha": "888b825b9af9c47573ceeae5828ade0eebcb7a6d",
                         "installed_by": ["modules"]
                     },
                     "iqtree": {
@@ -47,7 +47,7 @@
                     },
                     "seqkit/rmdup": {
                         "branch": "master",
-                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "git_sha": "b37c02fb23e80372e4857dc6695b699d62fea612",
                         "installed_by": ["modules"]
                     },
                     "td2/longorfs": {
