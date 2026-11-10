@@ -4,27 +4,36 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-// BLAST database
+// BLAST DATABASE
 include { BLAST_UPDATEBLASTDB } from '../modules/nf-core/blast/updateblastdb/main'
 include { BLAST_MAKEBLASTDB } from '../modules/nf-core/blast/makeblastdb/main'
 
-// retrieve sequences
+// INITIAL SEQUENCE RETRIEVAL
 include { BLAST_BLASTN } from '../modules/nf-core/blast/blastn/main'
 include { BLAST_TBLASTN } from '../modules/nf-core/blast/tblastn/main'
-include { GAWK_BLASTEXTRACT } from '../modules/local/gawk/blastextract/main'
+include { FILTER_BLASTEXTRACT } from '../modules/local/filter/blastextract/main'
 include { BLAST_BLASTDBCMD } from '../modules/nf-core/blast/blastdbcmd/main'
 include { SEQKIT_RMDUP } from '../modules/nf-core/seqkit/rmdup/main'
 include { ETE_TAXDB } from '../modules/local/ete_taxdb'
 include { ETE_FILTER } from '../modules/local/ete_filter'
 
-// ALIGN AND TREE
+// INITIAL ALIGNMENT AND TREE
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
-include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
-include { GAWK_CLEANORFS } from '../modules/local/gawk/cleanorfs/main'
+include { MAFFT_ALIGN as MAFFT_INITIAL } from '../modules/nf-core/mafft/align/main'
+include { FILTER_CLEANORFS } from '../modules/local/filter/cleanorfs/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
+
+// DUPLICATION AND ISOFORMS (TO ADD)
 include { TREERECS } from '../modules/nf-core/treerecs/main'
+include { FILTER_ORTHOGROUP } from '../modules/local/filter/orthogroup/main'
+include { SEQKIT_GREP } from '../modules/nf-core/seqkit/grep/main'
+
+// FINAL ALIGNMENT AND TREE
+include { MAFFT_ALIGN as MAFFT_FINAL } from '../modules/nf-core/mafft/align/main'
+include { MACSE_REFINEALIGNMENT } from '../modules/nf-core/macse/refinealignment/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 
+// PIPELINE
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_genephylo_pipeline'
@@ -84,7 +93,7 @@ workflow GENEPHYLO {
 	// SUBWORKFLOW: run BLAST on target sequences (2 options)
 	//
 
-	ch_blast_in = ch_samplesheet.map { meta, fasta, tree -> tuple(meta, file(fasta)) }
+	ch_blast_in = ch_samplesheet.map { meta, fasta, _tree -> tuple(meta, file(fasta)) }
 	ch_blastdb_in = ch_blastdb.first()
 	ch_blast_out = channel.empty()
 
@@ -104,8 +113,8 @@ workflow GENEPHYLO {
 	}
 
 	// get the first column of the blast results file
-	GAWK_BLASTEXTRACT( ch_blast_out )
-	ch_accessions_out = GAWK_BLASTEXTRACT.out.accessions
+	FILTER_BLASTEXTRACT( ch_blast_out )
+	ch_accessions_out = FILTER_BLASTEXTRACT.out.accessions
 
 	ch_extract_in = ch_accessions_out.map { meta, batch_file ->
 		tuple(meta, null, batch_file)
@@ -127,24 +136,24 @@ workflow GENEPHYLO {
 
 	// keep only the CDS file (longest_orfs.cds) from the TD2.LongOrfs outputs
 	ch_orf_cds = TD2_LONGORFS.out.orfs
-		.map { meta, files -> tuple(meta, files.find { it.name.endsWith('.cds') }) }
+		.map { meta, files -> tuple(meta, files.find { file -> file.name.endsWith('.cds') }) }
 
 	// keep the longest ORF for each sequence and clean the sequence ids
-	GAWK_CLEANORFS ( ch_orf_cds )
-	ch_aln_in = GAWK_CLEANORFS.out.fasta
+	FILTER_CLEANORFS ( ch_orf_cds )
+	ch_aln_in = FILTER_CLEANORFS.out.fasta
 
 	//
 	// SUBWORKFLOW: phylo
 	//
 
 	// build initial alignment
-	MAFFT_ALIGN (
+	MAFFT_INITIAL (
 		ch_aln_in, [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], false
 		)
 
-	ch_mafft_out = MAFFT_ALIGN.out.fas
+	ch_mafft_out = MAFFT_INITIAL.out.fas
 
-	// build phylogenetic tree
+	// build initial phylogenetic tree
 	FASTTREE ( ch_mafft_out )
 
 	ch_fasttree_out = FASTTREE.out.phylogeny
@@ -152,21 +161,43 @@ workflow GENEPHYLO {
 		tuple(meta, tree, params.species_tree)
 	}
 
+	// tree reconciliation to identify orthogroups
+
 	TREERECS ( ch_treerecs_in )
 
 	ch_treerecs_out = TREERECS.out.rectree
 
-	//ch_iqtree_in = ch_mafft_out
-	//	.join(ch_fasttree_out)
-	//	.map { meta, alignment, tree -> tuple(meta, alignment, tree) }
+	// extract the orthogroup for the gene of interest
 
-	// Don't keep before reconciliation (too many gaps in aln before correct attribution of orthologous groups)
-	// IQTREE (
-	// 	ch_iqtree_in, [], [], [], [], [], [], [], [], [], [], [], []
-	// 	)
+	FILTER_ORTHOGROUP ( ch_treerecs_out )
 
-	// ch_iqtree_out = IQTREE.out.phylogeny
-	// ch_versions = ch_versions.mix(IQTREE.out.versions)
+	ch_grep_in = ch_aln_in
+		.join(FILTER_ORTHOGROUP.out.ids)
+		.multiMap { meta, fasta, ids ->
+			sequence: tuple(meta, fasta)
+			pattern:  ids
+		}
+
+	SEQKIT_GREP ( ch_grep_in.sequence, ch_grep_in.pattern, 'fa' )
+
+	ch_orthogroup_out = SEQKIT_GREP.out.filter
+
+	MAFFT_FINAL (
+		ch_orthogroup_out, [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], false
+		)
+	
+	ch_macse_in = MAFFT_FINAL.out.fas
+
+	MACSE_REFINEALIGNMENT ( ch_macse_in )
+
+	ch_macse_out = MACSE_REFINEALIGNMENT.out.nt
+
+	ch_iqtree_in = ch_macse_out
+		.map { meta, alignment -> tuple(meta, alignment, []) }
+
+	IQTREE (
+	 	ch_iqtree_in, [], [], [], [], [], [], [], [], [], [], [], []
+	 	)
 
 	// if ( params.tree_tool == "iqtree" ) {
 

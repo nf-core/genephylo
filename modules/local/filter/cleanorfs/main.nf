@@ -1,4 +1,4 @@
-process GAWK_CLEANORFS {
+process FILTER_CLEANORFS {
     tag "${meta.id}"
     label 'process_single'
 
