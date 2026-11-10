@@ -21,8 +21,9 @@ include { ETE_FILTER } from '../modules/local/ete_filter'
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
 include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
 include { GAWK_CLEANORFS } from '../modules/local/gawk/cleanorfs/main'
-include { IQTREE } from '../modules/nf-core/iqtree/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
+include { TREERECS } from '../modules/nf-core/treerecs/main'
+include { IQTREE } from '../modules/nf-core/iqtree/main'
 
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -143,10 +144,17 @@ workflow GENEPHYLO {
 
 	ch_mafft_out = MAFFT_ALIGN.out.fas
 
-	// build phylogenetic tree - IGNORE FOR NOW
-	// FASTTREE ( ch_mafft_out )
+	// build phylogenetic tree
+	FASTTREE ( ch_mafft_out )
 
-	// ch_fasttree_out = FASTTREE.out.phylogeny
+	ch_fasttree_out = FASTTREE.out.phylogeny
+	ch_treerecs_in = ch_fasttree_out.map { meta, tree ->
+		tuple(meta, tree, params.species_tree)
+	}
+
+	TREERECS ( ch_treerecs_in )
+
+	ch_treerecs_out = TREERECS.out.rectree
 
 	//ch_iqtree_in = ch_mafft_out
 	//	.join(ch_fasttree_out)
