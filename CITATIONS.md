@@ -10,13 +10,25 @@
 
 ## Pipeline tools
 
-- [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+- [BLAST+](https://pubmed.ncbi.nlm.nih.gov/20003500/)
 
-> Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+  > Camacho C, Coulouris G, Avagyan V, Ma N, Papadopoulos J, Bealer K, Madden TL. BLAST+: architecture and applications. BMC Bioinformatics. 2009 Dec 15;10:421. doi: 10.1186/1471-2105-10-421. PubMed PMID: 20003500.
 
-- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+  > Altschul SF, Gish W, Miller W, Myers EW, Lipman DJ. Basic local alignment search tool. J Mol Biol. 1990 Oct 5;215(3):403-10. doi: 10.1016/S0022-2836(05)80360-2. PubMed PMID: 2231712.
 
-> Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+- [SeqKit](https://pubmed.ncbi.nlm.nih.gov/27706213/)
+
+  > Shen W, Le S, Li Y, Hu F. SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLoS One. 2016 Oct 5;11(10):e0163962. doi: 10.1371/journal.pone.0163962. PubMed PMID: 27706213; PubMed Central PMCID: PMC5051824.
+
+- [TD2](https://doi.org/10.1101/2025.04.13.648579)
+
+  > Mao A, Ji HJ, Haas B, Salzberg S, Sommer MJ. TD2: finding protein coding regions in transcripts. bioRxiv. 2025. doi: 10.1101/2025.04.13.648579.
+
+- [MAFFT](https://pubmed.ncbi.nlm.nih.gov/23329690/)
+
+  > Katoh K, Standley DM. MAFFT multiple sequence alignment software version 7: improvements in performance and usability. Mol Biol Evol. 2013 Apr;30(4):772-80. doi: 10.1093/molbev/mst010. PubMed PMID: 23329690; PubMed Central PMCID: PMC3603318.
+
+- [GNU Awk](https://www.gnu.org/software/gawk/)
 
 ## Software packaging/containerisation tools
 
