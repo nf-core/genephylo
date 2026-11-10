@@ -19,9 +19,8 @@ include { ETE_FILTER } from '../modules/local/ete_filter'
 
 // ALIGN AND TREE
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
-include { TD2_PREDICT } from '../modules/nf-core/td2/predict/main'
 include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
-include { GAWK_CLEANFASTAIDS } from '../modules/local/gawk/cleanfastaids/main'
+include { GAWK_CLEANORFS } from '../modules/local/gawk/cleanorfs/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
 
@@ -125,16 +124,13 @@ workflow GENEPHYLO {
 
 	TD2_LONGORFS(ch_orf_in, [ [:], [], [] ], [ [:], [] ])
 
-	ch_orf_folder = TD2_LONGORFS.out.orfs
-    .map { meta, files ->
-        tuple(meta, files[0].parent)  // Get parent directory of first file
-    }
+	// keep only the CDS file (longest_orfs.cds) from the TD2.LongOrfs outputs
+	ch_orf_cds = TD2_LONGORFS.out.orfs
+		.map { meta, files -> tuple(meta, files.find { it.name.endsWith('.cds') }) }
 
-	ch_predict_in = ch_orf_in.join(ch_orf_folder, by:0)
-
-	TD2_PREDICT(ch_predict_in)
-
-	ch_aln_in = TD2_PREDICT.out.cds
+	// keep the longest ORF for each sequence and clean the sequence ids
+	GAWK_CLEANORFS ( ch_orf_cds )
+	ch_aln_in = GAWK_CLEANORFS.out.fasta
 
 	//
 	// SUBWORKFLOW: phylo
@@ -146,9 +142,6 @@ workflow GENEPHYLO {
 		)
 
 	ch_mafft_out = MAFFT_ALIGN.out.fas
-
-	GAWK_CLEANFASTAIDS ( ch_mafft_out )
-	ch_cleanfasta_out = GAWK_CLEANFASTAIDS.out.fasta
 
 	// build phylogenetic tree - IGNORE FOR NOW
 	// FASTTREE ( ch_mafft_out )
