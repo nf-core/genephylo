@@ -11,7 +11,7 @@ include { BLAST_MAKEBLASTDB } from '../modules/nf-core/blast/makeblastdb/main'
 // retrieve sequences
 include { BLAST_BLASTN } from '../modules/nf-core/blast/blastn/main'
 include { BLAST_TBLASTN } from '../modules/nf-core/blast/tblastn/main'
-include { GAWK_BLASTEXTRACT } from '../modules/local/gawk/blastextract/main'
+include { FILTER_BLASTEXTRACT } from '../modules/local/filter/blastextract/main'
 include { BLAST_BLASTDBCMD } from '../modules/nf-core/blast/blastdbcmd/main'
 include { SEQKIT_RMDUP } from '../modules/nf-core/seqkit/rmdup/main'
 include { ETE_TAXDB } from '../modules/local/ete_taxdb'
@@ -20,10 +20,10 @@ include { ETE_FILTER } from '../modules/local/ete_filter'
 // ALIGN AND TREE
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
 include { MAFFT_ALIGN } from '../modules/nf-core/mafft/align/main'
-include { GAWK_CLEANORFS } from '../modules/local/gawk/cleanorfs/main'
+include { FILTER_CLEANORFS } from '../modules/local/filter/cleanorfs/main'
 include { FASTTREE } from '../modules/nf-core/fasttree/main'
 include { TREERECS } from '../modules/nf-core/treerecs/main'
-include { SELECT_ORTHOGROUP } from '../modules/local/select_orthogroup/main'
+include { FILTER_ORTHOGROUP } from '../modules/local/filter/orthogroup/main'
 include { SEQKIT_GREP } from '../modules/nf-core/seqkit/grep/main'
 include { IQTREE } from '../modules/nf-core/iqtree/main'
 
@@ -106,8 +106,8 @@ workflow GENEPHYLO {
 	}
 
 	// get the first column of the blast results file
-	GAWK_BLASTEXTRACT( ch_blast_out )
-	ch_accessions_out = GAWK_BLASTEXTRACT.out.accessions
+	FILTER_BLASTEXTRACT( ch_blast_out )
+	ch_accessions_out = FILTER_BLASTEXTRACT.out.accessions
 
 	ch_extract_in = ch_accessions_out.map { meta, batch_file ->
 		tuple(meta, null, batch_file)
@@ -132,8 +132,8 @@ workflow GENEPHYLO {
 		.map { meta, files -> tuple(meta, files.find { it.name.endsWith('.cds') }) }
 
 	// keep the longest ORF for each sequence and clean the sequence ids
-	GAWK_CLEANORFS ( ch_orf_cds )
-	ch_aln_in = GAWK_CLEANORFS.out.fasta
+	FILTER_CLEANORFS ( ch_orf_cds )
+	ch_aln_in = FILTER_CLEANORFS.out.fasta
 
 	//
 	// SUBWORKFLOW: phylo
@@ -162,17 +162,17 @@ workflow GENEPHYLO {
 	// ORTHOGROUP: keep the sequences reconciled with the gene of interest (meta.id)
 	//
 
-	SELECT_ORTHOGROUP ( ch_treerecs_out )
+	FILTER_ORTHOGROUP ( ch_treerecs_out )
 
 	// pair each gene's ORF sequences with its own id list (joined on meta, not on arrival order)
 	ch_grep_in = ch_aln_in
-		.join(SELECT_ORTHOGROUP.out.ids)
+		.join(FILTER_ORTHOGROUP.out.ids)
 		.multiMap { meta, fasta, ids ->
 			sequence: tuple(meta, fasta)
 			pattern:  ids
 		}
 
-	SEQKIT_GREP ( ch_grep_in.sequence, ch_grep_in.pattern, 'fasta' )
+	SEQKIT_GREP ( ch_grep_in.sequence, ch_grep_in.pattern, 'fa' )
 
 	ch_orthogroup_out = SEQKIT_GREP.out.filter
 

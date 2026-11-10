@@ -1,4 +1,4 @@
-process SELECT_ORTHOGROUP {
+process FILTER_ORTHOGROUP {
     tag "${meta.id}"
     label 'process_single'
 

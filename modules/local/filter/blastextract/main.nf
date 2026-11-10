@@ -1,4 +1,4 @@
-process GAWK_BLASTEXTRACT {
+process FILTER_BLASTEXTRACT {
     tag "${meta.id}"
     label 'process_single'
 

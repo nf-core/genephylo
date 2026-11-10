@@ -48,8 +48,7 @@
                     "seqkit/grep": {
                         "branch": "master",
                         "git_sha": "b37c02fb23e80372e4857dc6695b699d62fea612",
-                        "installed_by": ["modules"],
-                        "patch": "modules/nf-core/seqkit/grep/seqkit-grep.diff"
+                        "installed_by": ["modules"]
                     },
                     "seqkit/rmdup": {
                         "branch": "master",
