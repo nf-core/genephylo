@@ -130,7 +130,6 @@
                     "description": "Species tree (Newick) used by Treerecs to reconcile the gene trees."
                 }
             },
-            "required": ["tree_tool"],
             "fa_icon": "fas fa-tree"
         },
         "generic_options": {
