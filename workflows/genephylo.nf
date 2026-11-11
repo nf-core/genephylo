@@ -14,8 +14,8 @@ include { BLAST_TBLASTN } from '../modules/nf-core/blast/tblastn/main'
 include { FILTER_BLASTEXTRACT } from '../modules/local/filter/blastextract/main'
 include { BLAST_BLASTDBCMD } from '../modules/nf-core/blast/blastdbcmd/main'
 include { SEQKIT_RMDUP } from '../modules/nf-core/seqkit/rmdup/main'
-include { ETE_TAXDB } from '../modules/local/ete_taxdb'
-include { ETE_FILTER } from '../modules/local/ete_filter'
+include { ETE_TAXDB } from '../modules/local/ete/taxdb/main'
+include { ETE_FILTER } from '../modules/local/ete/filter/main'
 
 // INITIAL ALIGNMENT AND TREE
 include { TD2_LONGORFS } from '../modules/nf-core/td2/longorfs/main'
@@ -185,7 +185,7 @@ workflow GENEPHYLO {
 	MAFFT_FINAL (
 		ch_orthogroup_out, [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], false
 		)
-	
+
 	ch_macse_in = MAFFT_FINAL.out.fas
 
 	MACSE_REFINEALIGNMENT ( ch_macse_in )
