@@ -10,13 +10,49 @@
 
 ## Pipeline tools
 
-- [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/)
+- [BLAST+](https://pubmed.ncbi.nlm.nih.gov/20003500/)
 
-> Andrews, S. (2010). FastQC: A Quality Control Tool for High Throughput Sequence Data [Online].
+  > Camacho C, Coulouris G, Avagyan V, Ma N, Papadopoulos J, Bealer K, Madden TL. BLAST+: architecture and applications. BMC Bioinformatics. 2009 Dec 15;10:421. doi: 10.1186/1471-2105-10-421. PubMed PMID: 20003500.
 
-- [MultiQC](https://pubmed.ncbi.nlm.nih.gov/27312411/)
+  > Altschul SF, Gish W, Miller W, Myers EW, Lipman DJ. Basic local alignment search tool. J Mol Biol. 1990 Oct 5;215(3):403-10. doi: 10.1016/S0022-2836(05)80360-2. PubMed PMID: 2231712.
 
-> Ewels P, Magnusson M, Lundin S, Käller M. MultiQC: summarize analysis results for multiple tools and samples in a single report. Bioinformatics. 2016 Oct 1;32(19):3047-8. doi: 10.1093/bioinformatics/btw354. Epub 2016 Jun 16. PubMed PMID: 27312411; PubMed Central PMCID: PMC5039924.
+- [ETE 3](https://pubmed.ncbi.nlm.nih.gov/26921390/)
+
+  > Huerta-Cepas J, Serra F, Bork P. ETE 3: Reconstruction, Analysis, and Visualization of Phylogenomic Data. Mol Biol Evol. 2016 Jun;33(6):1635-8. doi: 10.1093/molbev/msw046. PubMed PMID: 26921390.
+
+- [FastTree](https://pubmed.ncbi.nlm.nih.gov/20224823/)
+
+  > Price MN, Dehal PS, Arkin AP. FastTree 2 – approximately maximum-likelihood trees for large alignments. PLoS One. 2010 Mar 10;5(3):e9490. doi: 10.1371/journal.pone.0009490. PubMed PMID: 20224823.
+
+- [GNU Awk](https://www.gnu.org/software/gawk/)
+
+- [IQ-TREE](https://doi.org/10.1093/molbev/msag117)
+
+  > Wong TKF, Ly-Trong N, Ren H, Demotte P, Banos H, Roger AJ, Susko E, Bielow C, De Maio N, Goldman N, Hahn MW, dos Reis M, Vinh LS, Huttley G, Lanfear R, Minh BQ. IQ-TREE 3: Phylogenomic Inference Software using Complex Evolutionary Models. Mol Biol Evol. 2026;msag117. doi: 10.1093/molbev/msag117.
+
+  > Kalyaanamoorthy S, Minh BQ, Wong TKF, von Haeseler A, Jermiin LS. ModelFinder: fast model selection for accurate phylogenetic estimates. Nat Methods. 2017;14(6):587-589. doi: 10.1038/nmeth.4285.
+
+- [MACSE](https://doi.org/10.1093/molbev/msy159)
+
+  > Ranwez V, Douzery EJP, Cambon C, Chantret N, Delsuc F. MACSE v2: Toolkit for the Alignment of Coding Sequences Accounting for Frameshifts and Stop Codons. Mol Biol Evol. 2018;35(10):2582-2584. doi: 10.1093/molbev/msy159.
+
+  > Ranwez V, Harispe S, Delsuc F, Douzery EJP. MACSE: Multiple Alignment of Coding SEquences accounting for frameshifts and stop codons. PLoS One. 2011;6(9):e22594. doi: 10.1371/journal.pone.0022594.
+
+- [MAFFT](https://pubmed.ncbi.nlm.nih.gov/23329690/)
+
+  > Katoh K, Standley DM. MAFFT multiple sequence alignment software version 7: improvements in performance and usability. Mol Biol Evol. 2013 Apr;30(4):772-80. doi: 10.1093/molbev/mst010. PubMed PMID: 23329690; PubMed Central PMCID: PMC3603318.
+
+- [SeqKit](https://pubmed.ncbi.nlm.nih.gov/27706213/)
+
+  > Shen W, Le S, Li Y, Hu F. SeqKit: A Cross-Platform and Ultrafast Toolkit for FASTA/Q File Manipulation. PLoS One. 2016 Oct 5;11(10):e0163962. doi: 10.1371/journal.pone.0163962. PubMed PMID: 27706213; PubMed Central PMCID: PMC5051824.
+
+- [TD2](https://doi.org/10.1101/2025.04.13.648579)
+
+  > Mao A, Ji HJ, Haas B, Salzberg S, Sommer MJ. TD2: finding protein coding regions in transcripts. bioRxiv. 2025. doi: 10.1101/2025.04.13.648579.
+
+- [Treerecs](https://doi.org/10.1093/bioinformatics/btaa615)
+
+  > Comte N, Morel B, Hasić D, Guéguen L, Boussau B, Daubin V, Penel S, Scornavacca C, Gouy M, Stamatakis A, Tannier E, Parsons DP. Treerecs: an integrated phylogenetic tool, from sequences to reconciliations. Bioinformatics. 2020;36(18):4822-4824. doi: 10.1093/bioinformatics/btaa615.
 
 ## Software packaging/containerisation tools
 
