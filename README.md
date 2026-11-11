@@ -21,9 +21,7 @@
 
 ## Introduction
 
-**nf-core/genephylo** is a bioinformatics pipeline that ...
-
-<!-- TODO nf-core (@Lea): Complete this sentence with a 2-3 sentence summary of the pipeline. -->
+**nf-core/genephylo** is a bioinformatics pipeline that retrieves the orthologs of one or more genes of interest across species and builds codon-aware alignments and phylogenetic trees for them. Starting from one seed sequence per gene, it searches a BLAST database for homologs, assigns them to species, extracts their coding sequences, and uses gene/species tree reconciliation to isolate the orthogroup of each gene. Its outputs are designed as inputs for evolutionary analyses, such as those run by nf-core/genephylomodeler.
 
 <!-- TODO nf-core: Include a figure that guides the user through the major workflow steps. Many nf-core
      workflows use the "tube map" design for that. See https://nf-co.re/docs/community/brand/workflow-schematics#examples for examples.   -->
