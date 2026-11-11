@@ -185,7 +185,7 @@ workflow GENEPHYLO {
 	MAFFT_FINAL (
 		ch_orthogroup_out, [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], [ [:], [] ], false
 		)
-	
+
 	ch_macse_in = MAFFT_FINAL.out.fas
 
 	MACSE_REFINEALIGNMENT ( ch_macse_in )
