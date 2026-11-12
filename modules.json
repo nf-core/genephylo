@@ -37,7 +37,7 @@
                     },
                     "iqtree": {
                         "branch": "master",
-                        "git_sha": "7b3452a23773f687ededb4befd037920e5a51341",
+                        "git_sha": "470454ce39c7d3ea191c0e195894653bc4a782ba",
                         "installed_by": ["modules"]
                     },
                     "macse/refinealignment": {
