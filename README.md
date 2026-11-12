@@ -84,11 +84,12 @@ For more details about the output files and reports, please refer to the
 
 ## Credits
 
-nf-core/genephylo was originally written by Lea Picard.
+nf-core/genephylo was originally written by [Lea Picard](https://github.com/leapicard).
 
 We thank the following people for their extensive assistance in the development of this pipeline:
 
 <!-- TODO nf-core (@Lea): If applicable, make list of people who have also contributed -->
+[Patricia C. Carter](https://github.com/pmuskusv)
 
 ## Contributions and Support
 
