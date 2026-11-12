@@ -69,6 +69,8 @@ nextflow run nf-core/genephylo \
 
 `--blastdb_option` selects how the BLAST database is provided: `build` (from your own sequences, as above), `update` (download a pre-formatted NCBI database, set with `--blastdb_update`) or `current` (an existing database, given with `--blastdb_dir`).
 
+`--taxdump` is optional. By default, the pipeline downloads the NCBI taxonomy at runtime. If the pipeline's tasks have no internet access (e.g. on offline compute nodes or behind some VPNs), or to keep the same taxonomy version across runs, download [`taxdump.tar.gz`](https://ftp.ncbi.nih.gov/pub/taxonomy/taxdump.tar.gz) yourself and pass it with `--taxdump /path/to/taxdump.tar.gz`.
+
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
 
