@@ -5,8 +5,7 @@
 */
 
 // BLAST DATABASE
-include { BLAST_UPDATEBLASTDB } from '../modules/nf-core/blast/updateblastdb/main'
-include { BLAST_MAKEBLASTDB } from '../modules/nf-core/blast/makeblastdb/main'
+include { PREPARE_BLASTDB } from '../subworkflows/local/prepare_blastdb/main'
 
 // INITIAL SEQUENCE RETRIEVAL
 include { BLAST_BLASTN } from '../modules/nf-core/blast/blastn/main'
@@ -57,37 +56,14 @@ workflow GENEPHYLO {
 	// SUBWORKFLOW: build BLAST database for subsequent analyses (3 options)
 	//
 
-	ch_blastdb_in = channel.empty()
-	ch_blastdb = channel.empty()
-
-	// 1. download from ncbi databases (update)
-	if (params.blastdb_option == 'update') {
-
-		ch_blastdb_in = channel.of( tuple( [ id: "BLASTDB" ], params.blastdb_update ))
-
-		BLAST_UPDATEBLASTDB( ch_blastdb_in )
-		ch_blastdb = BLAST_UPDATEBLASTDB.out.db
-
-	}
-	// 2. build custom databases from sequences (build)
-	else if (params.blastdb_option == 'build') {
-
-		channel
-			.fromPath(params.blastdb_build, checkIfExists: true)
-			.map { dbpath -> tuple( [ id: "BLASTDB" ], file(dbpath) ) }
-			.set { ch_blastdb_in }
-
-	        ch_taxmap = channel.value(file(params.blastdb_buildmap, checkIfExists: true))
-		BLAST_MAKEBLASTDB( ch_blastdb_in, ch_taxmap )
-		ch_blastdb = BLAST_MAKEBLASTDB.out.db
-
-	}
-	// 3. use existing database (current)
-	else if (params.blastdb_option == 'current') {
-
-		ch_blastdb = channel.of(tuple([ id: "BLASTDB" ], file(params.blastdb_dir) ))
-
-	}
+	PREPARE_BLASTDB (
+		params.blastdb_option,
+		params.blastdb_update,
+		params.blastdb_build,
+		params.blastdb_buildmap,
+		params.blastdb_dir
+	)
+	ch_blastdb = PREPARE_BLASTDB.out.db
 
 	//
 	// SUBWORKFLOW: run BLAST on target sequences (2 options)
