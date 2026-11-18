@@ -1,3 +1,3 @@
-id,fastafile,treefile
-GENE,/path/to/files/ex_seq.fasta,/path/to/files/ex_tree.tree
-GENE,/path/to/files/ex_seq.fasta,
+id,fastafile
+GENE,/path/to/files/ex_seq.fasta
+GENE,/path/to/files/ex_seq.fasta

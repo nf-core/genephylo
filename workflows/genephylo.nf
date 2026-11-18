@@ -69,7 +69,7 @@ workflow GENEPHYLO {
 	// SUBWORKFLOW: run BLAST on target sequences (2 options)
 	//
 
-	ch_blast_in = ch_samplesheet.map { meta, fasta, _tree -> tuple(meta, file(fasta)) }
+	ch_blast_in = ch_samplesheet.map { meta, fasta -> tuple(meta, file(fasta)) }
 	ch_blastdb_in = ch_blastdb.first()
 	ch_blast_out = channel.empty()
 
