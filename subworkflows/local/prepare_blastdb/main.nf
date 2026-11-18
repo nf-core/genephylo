@@ -30,7 +30,7 @@ workflow PREPARE_BLASTDB {
     }
     // 3. use existing database (current)
     else if (val_blastdb_option == 'current') {
-        ch_blastdb = channel.of( tuple( [ id: "BLASTDB" ], file(val_blastdb_dir) ))
+        ch_blastdb = channel.of( tuple( [ id: "BLASTDB" ], file(val_blastdb_dir, checkIfExists: true) ))
     }
 
     emit:
